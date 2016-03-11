@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/result_title"
+        android:text="@string/result_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_orange_dark"
+        />
+
+    <TextView
+        android:id="@+id/result_search_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/result_title"
+        android:textSize="20sp"
+        android:text="@string/result_search_info"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_green_dark"
+
+        />
+
+    <ListView
+        android:id="@+id/result_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/result_search_info"
+
+        >
+
+    </ListView>
+
+
+</RelativeLayout>

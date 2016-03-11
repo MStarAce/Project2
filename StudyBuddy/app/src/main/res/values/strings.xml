@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">StudyBuddy</string>
+    <string name="search_title">Find a Buddy</string>
+    <string name="search_button">search</string>
+    <string name="add_profile_button">add profile</string>
+    <string name="search_subject_edit">Subject</string>
+    <string name="search_level_edit">Level</string>
+    <string name="search_class_edit">Class</string>
+    <string name="search_distance_edit">Distance</string>
+    <string name="add_profile_title">Add a Profile</string>
+    <string name="result_title">Study Buddies</string>
+    <string name="result_search_info">Subject, Level, Class, Distance</string>
+    <string name="result_username">username</string>
+    <string name="result_distance">distance</string>
+    <string name="result_subject">subject</string>
+    <string name="result_level">level</string>
+    <string name="result_class">class</string>
+</resources>

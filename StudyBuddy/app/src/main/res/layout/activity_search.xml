@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="starace.learn.com.studybuddy.SearchActivity"
+    android:orientation="vertical"
+    >
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/search_title"
+        android:textSize="30sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_orange_dark"
+        android:layout_marginTop="20dp"
+        />
+
+    <EditText
+        android:id="@+id/search_edit_subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="@string/search_subject_edit"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+
+        />
+
+    <EditText
+        android:id="@+id/search_edit_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="@string/search_level_edit"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+
+        />
+
+    <EditText
+        android:id="@+id/search_edit_class"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="@string/search_class_edit"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+
+        />
+
+    <EditText
+        android:id="@+id/search_edit_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="@string/search_distance_edit"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        >
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/search_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+
+            />
+
+        <Button
+            android:id="@+id/buddy_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            />
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_profile_title"
+        android:textSize="30sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_orange_dark"
+        android:layout_marginTop="20dp"
+        />
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:id="@+id/add_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_profile_button"
+        android:textSize="30sp"
+        />
+
+</LinearLayout>
