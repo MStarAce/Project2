@@ -31,11 +31,14 @@ public class ResultAdapter extends ArrayAdapter {
 
         TextView userName = (TextView) rowItem.findViewById(R.id.result_username);
         TextView distance = (TextView) rowItem.findViewById(R.id.result_distance);
-        ImageView buddyView = (ImageView) rowItem.findViewById(R.id.result_buddy_image);
+
+        if (ResultActivity.myBuddyList.contains(myBuddy.get(position).getUserName())) {
+            ImageView buddyView = (ImageView) rowItem.findViewById(R.id.result_buddy_image);
+            buddyView.setImageResource(buddy);
+        }
 
         userName.setText(myBuddy.get(position).getUserName());
-        distance.setText(myBuddy.get(position).getDistance());
-        buddyView.setImageResource(buddy);
+        distance.setText(String.valueOf(myBuddy.get(position).getDistance()) + "miles");
 
         return rowItem;
     }

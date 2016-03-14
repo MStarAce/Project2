@@ -15,4 +15,9 @@
     <string name="result_subject">subject</string>
     <string name="result_level">level</string>
     <string name="result_class">class</string>
+    <string name="result_buddy_image_description">This is the image of buddy setting</string>
+    <string name="detail_title_username">Username</string>
+    <string name="detail_subject">- Subject</string>
+    <string name="detail_level">- Level</string>
+    <string name="detail_class">- Class</string>
 </resources>

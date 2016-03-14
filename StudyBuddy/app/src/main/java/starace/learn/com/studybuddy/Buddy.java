@@ -16,30 +16,27 @@ public class Buddy {
     private ArrayList<String> buddyListArray;
     private ArrayList<Interest> interestArray;
 
-    public ArrayList<Interest> getInterestArray() {
-        return interestArray;
-    }
 
-    public void setInterestArray(ArrayList<Interest> interestArray) {
-        this.interestArray = interestArray;
-    }
-
-    public Buddy(ArrayList<String> buddyListArray, String city, int distance, String firstName, String lastName, String state, String userName) {
+    public Buddy(ArrayList<String> buddyListArray, String city, int distance, String firstName, ArrayList<Interest> interestArray, String lastName, String state, String userName) {
         this.buddyListArray = buddyListArray;
         this.city = city;
         this.distance = distance;
         this.firstName = firstName;
+        this.interestArray = interestArray;
         this.lastName = lastName;
         this.state = state;
         this.userName = userName;
     }
 
-    public Buddy(String city, String firstName, String lastName, String state, String userName) {
+    public Buddy(String userName, String firstName, String lastName, String city, String state, int distance) {
         this.city = city;
         this.firstName = firstName;
         this.lastName = lastName;
         this.state = state;
         this.userName = userName;
+        this.distance = distance;
+        this.buddyListArray = new ArrayList<>();
+        this.interestArray = new ArrayList<>();
     }
 
     public ArrayList<String> getBuddyListArray() {
@@ -97,4 +94,13 @@ public class Buddy {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+    public ArrayList<Interest> getInterestArray() {
+        return interestArray;
+    }
+
+    public void setInterestArray(ArrayList<Interest> interestArray) {
+        this.interestArray = interestArray;
+    }
+
 }

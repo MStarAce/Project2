@@ -51,8 +51,9 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String searchCase = "";
+                isGoodInput =true;
 
-                if (editSubject != null) {
+                if (!editSubject.toString().equals("")) {
                     searchCase = editSubject.getText().toString();
                 } else {
                     Toast.makeText(SearchActivity.this,"A \"Subject\" needs to be included to complete a search",
@@ -60,30 +61,46 @@ public class SearchActivity extends AppCompatActivity {
                     isGoodInput = false;
                 }
 
-                if (editDistance != null) {
-                    searchCase = searchCase + "," + editDistance.getText().toString();
+                if (!editDistance.toString().equals("")) {
+                        String testDistance;
+                    try {
+                        testDistance =  editDistance.getText().toString().trim();
+                        Integer.valueOf(testDistance);
+                    }
+                    catch (Exception e) {
+                        Toast.makeText(SearchActivity.this,"For \"Distance\" please use number between 0 and 50",
+                                Toast.LENGTH_LONG).show();
+                        isGoodInput = false;
+                    }
+                    searchCase = searchCase + "," + editDistance.getText().toString().trim();
+
                 } else {
                     Toast.makeText(SearchActivity.this,"A \"Distance\" needs to be included to complete a search",
                             Toast.LENGTH_LONG).show();
+                    isGoodInput = false;
                 }
 
-                if (editLevel != null) {
+                if (!editLevel.getText().toString().equals("")) {
                     searchCase = searchCase + "," + editLevel.getText().toString();
                 }
 
-                if (editClass != null && editLevel == null) {
+                if (!editClass.getText().toString().equals("") && editLevel.getText().toString().equals("")) {
                     Toast.makeText(SearchActivity.this,"Please specify the \"Level\" of your class",
                             Toast.LENGTH_LONG).show();
                     isGoodInput = false;
 
-                } else if (editClass != null) {
+                } else if (!editClass.getText().toString().equals("")) {
                     searchCase = searchCase + "," + editClass.getText().toString();
                 }
 
                 if (isGoodInput) {
-                    intentSearchResult.putExtra(TYPE_SEARCH,searchCase);
+                    intentSearchResult.putExtra(TYPE_SEARCH, searchCase.toLowerCase());
                     startActivity(intentSearchResult);
-                    isGoodInput = false;
+                    editLevel.equals("");
+                    editDistance.equals("");
+                    editSubject.equals("");
+                    editClass.equals("");
+
                 }
 
             }
