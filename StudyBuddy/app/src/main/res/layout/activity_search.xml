@@ -19,7 +19,7 @@
         android:layout_marginTop="20dp"
         />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/search_edit_subject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,10 +29,11 @@
         android:layout_marginTop="20dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
+        android:completionThreshold="1"
 
         />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/search_edit_level"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,6 +43,8 @@
         android:layout_marginTop="20dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
+        android:completionThreshold="1"
+
 
         />
 
@@ -51,19 +54,6 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:hint="@string/search_class_edit"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-
-        />
-
-    <EditText
-        android:id="@+id/search_edit_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:hint="@string/search_distance_edit"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:paddingLeft="30dp"

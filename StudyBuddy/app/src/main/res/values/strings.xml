@@ -6,7 +6,7 @@
     <string name="search_subject_edit">Subject</string>
     <string name="search_level_edit">Level</string>
     <string name="search_class_edit">Class</string>
-    <string name="search_distance_edit">Distance</string>
+    <string name="search_distance_edit">Distance (miles)</string>
     <string name="add_profile_title">Add a Profile</string>
     <string name="result_title">Study Buddies</string>
     <string name="result_search_info">Subject, Level, Class, Distance</string>
@@ -17,7 +17,8 @@
     <string name="result_class">class</string>
     <string name="result_buddy_image_description">This is the image of buddy setting</string>
     <string name="detail_title_username">Username</string>
-    <string name="detail_subject">- Subject</string>
-    <string name="detail_level">- Level</string>
-    <string name="detail_class">- Class</string>
+    <string name="detail_subject">- Subject: NA</string>
+    <string name="detail_level">- Level: NA</string>
+    <string name="detail_class">- Class: NA</string>
+    <string name="result_image_description">result_image_description</string>
 </resources>

@@ -1,6 +1,7 @@
 package starace.learn.com.studybuddy;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +16,15 @@ import java.util.ArrayList;
  * Created by mstarace on 3/13/16.
  */
 public class DetailActivity extends AppCompatActivity {
+    private static final String TAG_DETAIL = "DetailActivity";
     FloatingActionButton addBuddy;
     TextView detailTitle;
     ImageView isBuddy;
     ListView detailListView;
-
-    DetailAdapter detailAdapter;
-
+    DetailCursorAdapter detailCursorAdapter;
     ArrayList<Interest> curInterest;
     String userName;
+    BuddySQLHelper db = BuddySQLHelper.getInstance(DetailActivity.this);
 
 
     @Override
@@ -33,9 +34,10 @@ public class DetailActivity extends AppCompatActivity {
 
         initialize();
         setBuddyButton();
-        getDataFromResult();
+        getUserFromResult();
         setInitialState();
-        initializeDetailAdapter();
+        setDetailView();
+
     }
 
     public void initialize(){
@@ -51,17 +53,15 @@ public class DetailActivity extends AppCompatActivity {
         addBuddy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int buddyIndex;
-                if (ResultActivity.myBuddyList.contains(userName)) {
-                    buddyIndex = ResultActivity.myBuddyList.indexOf(userName);
-                    ResultActivity.myBuddyList.remove(buddyIndex);
 
+                if (isBuddy.getAlpha() == 1.0f) {
+                    db.removeFriend(SearchActivity.loggedIn,userName);
+                    db.removeSingleBuddyImage(userName);
                     isBuddy.setAlpha(0.2f);
-
                 } else {
-                    ResultActivity.myBuddyList.add(userName);
+                    db.addFriend(SearchActivity.loggedIn,userName);
+                    db.addSingleBuddyImage(userName);
                     isBuddy.setAlpha(1.0f);
-
                 }
 
             }
@@ -69,32 +69,31 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    public void getDataFromResult() {
+    public void getUserFromResult() {
         Intent fromResult = getIntent();
-        curInterest = fromResult.getParcelableArrayListExtra(ResultActivity.SEND_DETAIL);
         userName = fromResult.getStringExtra(ResultActivity.SEND_USERNAME);
-    }
-
-    public void initializeDetailAdapter() {
-
-        detailAdapter = new DetailAdapter(this,curInterest);
-        detailListView.setAdapter(detailAdapter);
-
     }
 
     public void setInitialState (){
         detailTitle.setText(userName);
 
-        if (ResultActivity.myBuddyList.contains(userName)) {
-            isBuddy.setAlpha(1.0f);
+        Cursor cursor = db.checkFriends(SearchActivity.loggedIn,userName);
 
+        if (cursor.getCount() != 0) {
+            isBuddy.setAlpha(1.0f);
         } else {
             isBuddy.setAlpha(0.2f);
-
         }
 
-
+        cursor.close();
     }
 
+    private void setDetailView(){
+        Cursor cursor = db.getInterests(userName);
+
+        detailCursorAdapter = new DetailCursorAdapter(DetailActivity.this, cursor, 0);
+        detailListView.setAdapter(detailCursorAdapter);
+
+    }
 
 }
