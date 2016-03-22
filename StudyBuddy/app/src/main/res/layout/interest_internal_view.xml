@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/detail_subject"
+        android:id="@+id/interests_subject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/detail_subject"
@@ -16,7 +16,7 @@
         />
 
     <TextView
-        android:id="@+id/detail_level"
+        android:id="@+id/interests_level"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/detail_level"
@@ -26,7 +26,7 @@
         />
 
     <TextView
-        android:id="@+id/detail_class"
+        android:id="@+id/interests_class"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/detail_class"

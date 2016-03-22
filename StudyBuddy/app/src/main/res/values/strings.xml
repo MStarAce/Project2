@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StudyBuddy</string>
+    <string name="app_name">Study Buddy</string>
     <string name="search_title">Find a Buddy</string>
     <string name="search_button">search</string>
     <string name="add_profile_button">add profile</string>
@@ -21,4 +21,14 @@
     <string name="detail_level">- Level: NA</string>
     <string name="detail_class">- Class: NA</string>
     <string name="result_image_description">result_image_description</string>
+    <string name="search_quote">We should not only use the brains we have but all that we can borrow.</string>
+    <string name="search_quote_author">- Woodrow Wilson</string>
+    <string name="interest_title_username">Edit Your Interests</string>
+    <string name="add_title">Add a New Interest</string>
+    <string name="interest_add_level_edit">Level (not required)</string>
+    <string name="interest_add_class_edit">Class (not required)</string>
+    <string name="interest_add_quote">An investment in knowledge pays the best interest.</string>
+    <string name="Interest_add_quote_author">- Benjamin Franklin</string>
+    <string name="menu_edit">edit_menu</string>
+    <string name="menu_search">search_menu</string>
 </resources>

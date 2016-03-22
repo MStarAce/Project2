@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/search_title"
+            android:text="@string/add_title"
             android:textSize="30sp"
             android:textAlignment="center"
             android:textColor="@android:color/holo_orange_dark"
@@ -27,7 +27,7 @@
             />
 
         <AutoCompleteTextView
-            android:id="@+id/search_edit_subject"
+            android:id="@+id/interest_add_subject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
@@ -35,42 +35,40 @@
             android:textColorHint="@color/greenLight"
             android:layout_gravity="center"
             android:layout_marginTop="40dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:completionThreshold="1"
             />
 
         <AutoCompleteTextView
-            android:id="@+id/search_edit_level"
+            android:id="@+id/interest_add_level"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:hint="@string/search_level_edit"
+            android:hint="@string/interest_add_level_edit"
             android:textColorHint="@color/greenLight"
             android:layout_gravity="center"
             android:layout_marginTop="40dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:completionThreshold="1"
-
-
             />
 
         <EditText
-            android:id="@+id/search_edit_class"
+            android:id="@+id/interest_add_class"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:hint="@string/search_class_edit"
+            android:hint="@string/interest_add_class_edit"
             android:textColorHint="@color/greenLight"
             android:layout_gravity="center"
             android:layout_marginTop="40dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
 
@@ -84,7 +82,7 @@
             >
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/search_button"
+                android:id="@+id/interest_add_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
@@ -92,22 +90,12 @@
                 android:layout_marginRight="20dp"
                 />
 
-            <Button
-                android:id="@+id/buddy_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="40dp"
-                android:background="@drawable/buddy"
-                android:layout_marginLeft="20dp"
-                />
-
-
         </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="@string/search_quote"
+            android:text="@string/interest_add_quote"
             android:textSize="15sp"
             android:textAlignment="center"
             android:textColor="@color/greenDark"
@@ -121,7 +109,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="@string/search_quote_author"
+            android:text="@string/Interest_add_quote_author"
             android:textSize="12sp"
             android:textColor="@color/greenDark"
             android:background="@color/orangeLight"

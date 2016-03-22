@@ -1,10 +1,18 @@
 package starace.learn.com.studybuddy;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -15,10 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SearchActivity extends AppCompatActivity {
-
-    public static String TYPE_SEARCH = "search_type";
+    private static final String MY_PREF_FILE = "myPrefFile";
+    private static final String TAG_SEARCH = "SearchActivity";
+    public static final String TYPE_SEARCH = "search_type";
     public static final String  loggedIn = "MeNeedStudy";
-    public static String BUDDY_SEARCH = "buddy";
+    public static final String BUDDY_SEARCH = "buddy";
+    public static final String HAS_RUN = "hasRun";
+    public static final String SEARCH_QUERY = "searchQuery";
 
     AutoCompleteTextView editSubject;
     AutoCompleteTextView editLevel;
@@ -26,15 +37,15 @@ public class SearchActivity extends AppCompatActivity {
     ArrayAdapter<String> subjectAdapter;
     ArrayAdapter<String> levelAdapter;
 
-    public static final ArrayList<String> subjectArray = new ArrayList<>(Arrays.asList("History"
+    private static final ArrayList<String> subjectArray = new ArrayList<>(Arrays.asList("History"
             , "Biology","Computer Science","Chemistry","Math","Art History","English"));
 
-    public static final ArrayList<String> levelArray = new ArrayList<>(Arrays.asList("Graduate",
+    private static final ArrayList<String> levelArray = new ArrayList<>(Arrays.asList("Graduate",
             "Undergrad", "High School", "Technical School"));
 
     FloatingActionButton searchButton;
     Button buddyButton;
-
+    Boolean hasRun;
     Intent intentSearchResult;
     Boolean isGoodInput = true;
 
@@ -46,8 +57,17 @@ public class SearchActivity extends AppCompatActivity {
         initialize();
         setSearchButton();
         setBuddyButton();
-        setDatabase();
 
+        SharedPreferences sharedPreferences = getSharedPreferences(MY_PREF_FILE,MODE_PRIVATE);
+        hasRun = sharedPreferences.getBoolean(HAS_RUN,false);
+        if (!hasRun) {
+            setDatabase();
+
+        }
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        handleIntent(getIntent());
     }
 
     public void initialize(){
@@ -63,7 +83,8 @@ public class SearchActivity extends AppCompatActivity {
         editLevel.setAdapter(levelAdapter);
     }
 
-    public void setSearchButton(){
+    // sets the search button and passes the edittext values to the result activity
+    private void setSearchButton(){
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,7 +115,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 } else if (editClass.getText().toString().equals("") && levelArray.contains(editLevel.getText().toString())) {
                     searchCase = searchCase + "," + editLevel.getText().toString();
-                } else if (editClass.getText().toString().equals("") && editLevel.getText().toString().equals("")){
+                } else if (editClass.getText().toString().equals("") && editLevel.getText().toString().equals("")) {
 
                 } else {
                     Toast.makeText(SearchActivity.this, "Please choose a \"Level\" from the list to complete the search",
@@ -107,7 +128,7 @@ public class SearchActivity extends AppCompatActivity {
                 //check to see if class exists
                 if (!editClass.getText().toString().equals("")) {
 
-                    searchCase = searchCase +"," + editClass.getText().toString();
+                    searchCase = searchCase + "," + editClass.getText().toString();
                 }
 
                 if (isGoodInput) {
@@ -124,19 +145,19 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    public void setBuddyButton () {
+    private void setBuddyButton () {
         buddyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                intentSearchResult.putExtra(TYPE_SEARCH,BUDDY_SEARCH);
+                intentSearchResult.putExtra(TYPE_SEARCH, BUDDY_SEARCH);
                 startActivity(intentSearchResult);
             }
         });
 
     }
 
-    public void setDatabase() {
+    private void setDatabase() {
         BuddySQLHelper createDB = BuddySQLHelper.getInstance(this);
         createDB.fillBuddyTable();
         createDB.fillInterestTable();
@@ -144,5 +165,51 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
 
+        SharedPreferences.Editor sharedPref = getSharedPreferences(MY_PREF_FILE,MODE_PRIVATE).edit().putBoolean(HAS_RUN, true);
+        sharedPref.commit();
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.edit) {
+            Intent toEditInterest = new Intent(SearchActivity.this, EditInterests.class);
+            startActivity(toEditInterest);
+        }
+
+            return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    // handles the search intent
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            Intent toEditInterest = new Intent(SearchActivity.this, ResultActivity.class);
+            toEditInterest.putExtra(SEARCH_QUERY, query);
+            startActivity(toEditInterest);
+        }
+    }
 }

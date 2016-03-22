@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -13,11 +14,10 @@ import java.util.ArrayList;
 public class BuddySQLHelper extends SQLiteOpenHelper {
     private static final String TAG_HELPER = "BuddySQLHelper";
     private static final  int DB__BUDDY_VERSION = 1;
+
     public static final String DB_BUDDY_NAME = "buddy_db";
     public static final String BUDDY_TABLE_NAME = "buddy";
     public static final String INTEREST_TABLE_NAME = "interest";
-
-    //String userName, String firstName, String lastName, String city, String state, int distance
     public static final String BUDDY_COLUMN_ID = "_id";
     public static final String BUDDY_COLUMN_USERNAME = "_user_name";
     public static final String BUDDY_COLUMN_FIRSTNAME = "first_name";
@@ -109,12 +109,10 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return instance;
     }
 
-    public Cursor getBuddyCursor(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(BUDDY_TABLE_NAME,BUDDY_COLUMN_ALL, null,null,null,null,null);
-        return cursor;
-    }
-
+    /**
+     * Takes a ArrayList of strings and updates the database "buddy" table with images
+     * @param userName
+     */
     public void addBuddyImage(ArrayList<String> userName) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -124,6 +122,10 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Adds an image resource integer to a single user in the "buddy" table
+     * @param user
+     */
     public void addSingleBuddyImage(String user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -131,6 +133,10 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
                     IMAGE_BUDDY + " WHERE " + BUDDY_COLUMN_USERNAME + " = '" + user + "';");
     }
 
+    /**
+     * removes an image resource integer from a single user in the "buddy" table
+     * @param user
+     */
     public void removeSingleBuddyImage(String user){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -139,6 +145,11 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * returns a cursor with the search data from any users in the input of an ArrayList of strings
+     * @param userName
+     * @return
+     */
     public Cursor getUserDataFromList(ArrayList<String> userName){
         String[] arguments = new String[userName.size()];
         arguments = userName.toArray(arguments);
@@ -160,6 +171,27 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * returns a cursor with the search data from a single user
+     * @param userName
+     * @return
+     */
+    public Cursor getUserDataFromList(String userName){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(BUDDY_TABLE_NAME, BUDDY_COLUMN_ALL,
+                BUDDY_COLUMN_USERNAME+ " = ? ",
+                new String[]{userName},
+                null,
+                null,
+                null);
+        cursor.moveToFirst();
+        return cursor;
+    }
+
+    /**
+     * fills the "buddy" table in the database with hardcoded values
+     */
     public void fillBuddyTable(){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -173,12 +205,9 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + BUDDY_TABLE_NAME + " VALUES (null,'MeNeedStudy', 'Michael', 'Starace','Oakland','CA', 0, null," + IMAGE_USER8 + ");");
     }
 
-    public Cursor getInterestCursor(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(INTEREST_TABLE_NAME, INTEREST_COLUMN_ALL, null,null,null,null,null);
-        return cursor;
-    }
-
+    /**
+     * fills the "interest" table in the database with hardcoded values
+     */
     public void fillInterestTable(){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -209,6 +238,11 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * returns a cursor with the search data for a single user from the "interest" table
+     * @param user
+     * @return
+     */
     public Cursor getInterests(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
@@ -221,7 +255,156 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * checks the "interest" table for the data from one user and returns a boolean
+     * false if not unique and true if unique based on a subject input
+     * @param user
+     * @param subject
+     * @return
+     */
+    public Boolean checkInterests(String user,String subject) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
+                INTEREST_COLUMN_USER_NAME + " = ? AND " + INTEREST_COLUMN_SUBJECT + " = ?",
+                new String[]{user,subject},
+                null,
+                null,
+                null);
+        cursor.moveToFirst();
 
+        if (cursor.getCount() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * checks the "interest" table for the data from one user and returns a boolean that is false
+     * if it isn't unique and true if it is. uses subject and level columns.
+     * @param user
+     * @param subject
+     * @param level
+     * @return
+     */
+    public Boolean checkInterests(String user,String subject,String level) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
+                INTEREST_COLUMN_USER_NAME + " = ? AND " + INTEREST_COLUMN_SUBJECT + " = ? AND " +
+                INTEREST_COLUMN_LEVEL+ " = ?",
+                new String[]{user,subject,level},
+                null,
+                null,
+                null);
+        cursor.moveToFirst();
+
+        if (cursor.getCount() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * checks the "interest" table for data from a single user based on matching subject, level,
+     * and class. returns a boolean that is true if unique and false if not.
+     * @param user
+     * @param subject
+     * @param level
+     * @param myClass
+     * @return
+     */
+    public Boolean checkInterests(String user,String subject,String level,String myClass) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
+                INTEREST_COLUMN_USER_NAME + " = ? AND " + INTEREST_COLUMN_SUBJECT + " = ? AND " +
+                        INTEREST_COLUMN_LEVEL+ " = ? AND "+ INTEREST_COLUMN_CLASS + " = ?",
+                new String[]{user,subject,level,myClass},
+                null,
+                null,
+                null);
+        cursor.moveToFirst();
+
+        if (cursor.getCount() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * deletes a interest from the logged in user. Works for interests that contain one or all
+     * of the following; subject, level, class.
+     * @param subject
+     * @param level
+     * @param myClass
+     * @param loggedIn
+     */
+    public void deleteInterest(String subject, String level, String myClass, String loggedIn){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Log.d(TAG_HELPER, "This is the subject " + subject);
+        Log.d(TAG_HELPER, "This is the level " +level);
+        Log.d(TAG_HELPER, "This is the class " + myClass);
+
+        if (level == null) {
+
+            db.execSQL("DELETE FROM " + INTEREST_TABLE_NAME + " WHERE " + INTEREST_COLUMN_USER_NAME + " = '" + loggedIn + "' AND " +
+                    INTEREST_COLUMN_SUBJECT + " = '" + subject + "'; ");
+
+        } else if (myClass == null) {
+                db.execSQL("DELETE FROM " + INTEREST_TABLE_NAME + " WHERE " + INTEREST_COLUMN_USER_NAME + " = '" + loggedIn + "' AND " +
+                        INTEREST_COLUMN_SUBJECT + " = '" + subject + "' AND " + INTEREST_COLUMN_LEVEL + " =  '" + level + "'; ");
+        } else {
+                db.execSQL("DELETE FROM " + INTEREST_TABLE_NAME + " WHERE " + INTEREST_COLUMN_USER_NAME + " = '" + loggedIn + "' AND " +
+                        INTEREST_COLUMN_SUBJECT + " = '" + subject + "' AND " + INTEREST_COLUMN_LEVEL + " =  '" + level +
+                        "' AND " + INTEREST_COLUMN_CLASS + " = '" + myClass + "';");
+        }
+
+    }
+
+    /**
+     * Adds a new interest to the "interest" table for the logged in user
+     * @param interest
+     * @param loggedIn
+     * @return
+     */
+    public boolean addInterest(String interest, String loggedIn) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] arrayInterests = interest.split(",");
+        boolean isUnique;
+
+        if (arrayInterests.length == 1) {
+            isUnique = checkInterests(loggedIn,arrayInterests[0]);
+            if (isUnique) {
+                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" + arrayInterests[0] + "', null, null);");
+            }
+        } else if (arrayInterests.length == 2) {
+            isUnique = checkInterests(loggedIn,arrayInterests[0],arrayInterests[1]);
+            if (isUnique) {
+                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" + arrayInterests[0] + "','" + arrayInterests[1] + "', null);");
+            }
+        } else {
+            isUnique = checkInterests(loggedIn,arrayInterests[0],arrayInterests[1],arrayInterests[2]);
+            if (isUnique) {
+                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" + arrayInterests[0] + "','" + arrayInterests[1] + "','" + arrayInterests[2] + "');");
+            }
+        }
+
+       return isUnique;
+
+    }
+
+    /**
+     * returns data for all users except the logged in user from the "interest table"
+     * requires subject, level, and class.
+     * @param subject
+     * @param level
+     * @param myClass
+     * @param loggedIn
+     * @return
+     */
     public Cursor searchInterest(String subject, String level, String myClass, String loggedIn) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
@@ -235,8 +418,14 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-
-
+    /**
+     * returns data for all users except the logged in user from the "interest table"
+     * requires subject, level.
+     * @param subject
+     * @param level
+     * @param loggedIn
+     * @return
+     */
     public Cursor searchInterest(String subject, String level, String loggedIn) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
@@ -250,6 +439,13 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * returns data for all users except the logged in user from the "interest table"
+     * requires subject,
+     * @param subject
+     * @param loggedIn
+     * @return
+     */
     public Cursor searchInterest(String subject, String loggedIn) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
@@ -262,6 +458,9 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * fills the "friend" table with the hardcoded values for the logged in user(only one user)
+     */
     public void fillFriendTable () {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -271,6 +470,11 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + FRIEND_TABLE_NAME + " VALUES (null,'MeNeedStudy', 'DrStudy');");
     }
 
+    /**
+     * returns the results from the "friends" table for a specific user
+     * @param user
+     * @return
+     */
     public Cursor getFriends (String user){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(FRIEND_TABLE_NAME,FRIEND_COLUMN_ALL,
@@ -283,6 +487,12 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * returns a cursor that is empty if the logged in use and the checked user are not friends.
+     * @param loggedIn
+     * @param user
+     * @return
+     */
     public Cursor checkFriends (String loggedIn, String user){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(FRIEND_TABLE_NAME,FRIEND_COLUMN_ALL,
@@ -295,22 +505,25 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**
+     * adds a user to the "friend" table for the logged in user
+     * @param loggedIn
+     * @param user
+     */
     public void addFriend (String loggedIn, String user) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("INSERT INTO " + FRIEND_TABLE_NAME + " VALUES (null,'" + loggedIn + "', '" + user + "');");
     }
 
+    /**
+     * removes a user from the friend data of the logged in user
+     * @param loggedIn
+     * @param user
+     */
     public void removeFriend(String loggedIn, String user) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + FRIEND_TABLE_NAME + " WHERE " + FRIEND_COLUMN_BUDDY+ " = '" +
         user+ "' AND "+ FRIEND_COLUMN_USERNAME+ " = '" + loggedIn+ "';");
     }
 
-    public void deleteAll(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(TABLE_FRIEND_DROP);
-        db.execSQL(TABLE_INTEREST_DROP);
-        db.execSQL(TABLE_BUDDY_DROP);
-
-    }
 }

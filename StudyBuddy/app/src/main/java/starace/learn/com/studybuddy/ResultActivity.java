@@ -18,12 +18,9 @@ import java.util.ArrayList;
 public class ResultActivity extends AppCompatActivity {
     private final static String TAG_RESULT = "ResultActivity";
     public static String SEND_USERNAME = "send_username";
-    public static ArrayList<String> myBuddyList = new ArrayList<>();
     TextView searchResultInfo;
     ListView resultList;
     ResultCursorAdapter resultCursorAdapter;
-    ArrayList<Buddy> memberArrayList;
-    ArrayList<Buddy> resultMemberArrayList;
     String[] searchCriteria;
     BuddySQLHelper db = BuddySQLHelper.getInstance(this);
 
@@ -40,21 +37,24 @@ public class ResultActivity extends AppCompatActivity {
     public void initialize() {
         searchResultInfo = (TextView) findViewById(R.id.result_search_info);
         resultList = (ListView) findViewById(R.id.result_list_view);
-        resultMemberArrayList = new ArrayList<>();
-        memberArrayList = new ArrayList<>();
 
     }
 
-    public void search(){
+    // determines what serach to complete based on the getExtra from the search activity
+    private void search(){
         Intent getSearch = getIntent();
-        if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.BUDDY_SEARCH)){
-            buddySearch();
-        } else {
-            criteriaSearch();
+        if (getSearch.getStringExtra(SearchActivity.SEARCH_QUERY) != null) {
+            userSearch(getSearch.getStringExtra(SearchActivity.SEARCH_QUERY));
+        } else if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH) != null) {
+            if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.BUDDY_SEARCH)) {
+                buddySearch();
+            } else {
+                criteriaSearch();
+            }
         }
-
     }
 
+    // based on who is currently logged in this sets the images in the database to identify friends
     private void setBuddyImages(){
         Cursor cursor = db.getFriends(SearchActivity.loggedIn);
         // check who is on the friend list
@@ -63,12 +63,22 @@ public class ResultActivity extends AppCompatActivity {
             userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.FRIEND_COLUMN_BUDDY)));
             cursor.moveToNext();
         }
-
         // set buddy image for logged in user, this would need to be handled if new user logs in
         db.addBuddyImage(userNames);
-
     }
 
+    // single user search from the menu search option of the search activity
+    private void userSearch(String user){
+
+        Cursor cursor = db.getUserDataFromList(user);
+        resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
+        resultList.setAdapter(resultCursorAdapter);
+
+        // add search type to the sub title text field
+        searchResultInfo.setText("User Search Result");
+    }
+
+    // performs a search for all friends of the user
     private void buddySearch(){
 
         Cursor cursor = db.getFriends(SearchActivity.loggedIn);
@@ -81,7 +91,7 @@ public class ResultActivity extends AppCompatActivity {
         }
 
         // set buddy image for logged in user, this would need to be handled if new user logs in
-        db.addBuddyImage(userNames);
+        //db.addBuddyImage(userNames);
 
         // get data for each user and add to list
         cursor = db.getUserDataFromList(userNames);
@@ -92,7 +102,8 @@ public class ResultActivity extends AppCompatActivity {
         searchResultInfo.setText("Your Buddy List");
     }
 
-    public void criteriaSearch() {
+    // performs a database search based on the criteria entered by the user on the search activity
+    private void criteriaSearch() {
         ArrayList<String> userNames = new ArrayList<>();
         Intent getSearchCriteria = getIntent();
         searchCriteria = getSearchCriteria.getStringExtra(SearchActivity.TYPE_SEARCH).split(",");
@@ -136,7 +147,7 @@ public class ResultActivity extends AppCompatActivity {
 
     }
 
-    public void setOnItemClickListener(){
+    private void setOnItemClickListener(){
         resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

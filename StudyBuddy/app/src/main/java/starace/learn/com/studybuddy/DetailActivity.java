@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 /**
  * Created by mstarace on 3/13/16.
  */
@@ -22,10 +20,8 @@ public class DetailActivity extends AppCompatActivity {
     ImageView isBuddy;
     ListView detailListView;
     DetailCursorAdapter detailCursorAdapter;
-    ArrayList<Interest> curInterest;
     String userName;
     BuddySQLHelper db = BuddySQLHelper.getInstance(DetailActivity.this);
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +33,16 @@ public class DetailActivity extends AppCompatActivity {
         getUserFromResult();
         setInitialState();
         setDetailView();
-
     }
 
-    public void initialize(){
+    private void initialize(){
         addBuddy = (FloatingActionButton) findViewById(R.id.detail_buddy_button);
         detailTitle = (TextView) findViewById(R.id.detail_title_username);
         isBuddy = (ImageView) findViewById(R.id.detail_buddy_true);
         detailListView = (ListView) findViewById(R.id.detail_list_view);
-        curInterest = new ArrayList<>();
-
     }
-
-    public void setBuddyButton () {
+    // sets the buddy button based on the current state
+    private void setBuddyButton () {
         addBuddy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,12 +62,13 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    public void getUserFromResult() {
+    private void getUserFromResult() {
         Intent fromResult = getIntent();
         userName = fromResult.getStringExtra(ResultActivity.SEND_USERNAME);
     }
 
-    public void setInitialState (){
+    // sets the initial state of buddy image based on a database search for friends
+    private void setInitialState (){
         detailTitle.setText(userName);
 
         Cursor cursor = db.checkFriends(SearchActivity.loggedIn,userName);
