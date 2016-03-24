@@ -77,24 +77,23 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-
             >
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/interest_add_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginRight="20dp"
+                android:src="@drawable/plus_circle"
                 />
 
         </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:text="@string/interest_add_quote"
             android:textSize="15sp"
             android:textAlignment="center"
@@ -103,12 +102,12 @@
             android:background="@color/orangeLight"
             android:layout_gravity="bottom"
             android:textStyle="italic"
-            android:paddingTop="10dp"
+            android:paddingTop="5dp"
             />
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
             android:text="@string/Interest_add_quote_author"
             android:textSize="12sp"
             android:textColor="@color/greenDark"

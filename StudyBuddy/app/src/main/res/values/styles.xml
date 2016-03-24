@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/greenDark</item>
         <item name="android:titleTextStyle">@style/title_text_style</item>
 
+
     </style>
 
     <style name="title_text_style">

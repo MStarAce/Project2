@@ -3,7 +3,6 @@ package starace.learn.com.studybuddy;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -16,21 +15,15 @@ import java.util.Arrays;
 
 public class InterestAddActivity extends AppCompatActivity {
     private static final String TAG_ADD = "add_interest_activity";
+    public ArrayList<String> subjectArray;
+    public ArrayList<String> levelArray;
 
     AutoCompleteTextView editSubject;
     AutoCompleteTextView editLevel;
     EditText editClass;
     ArrayAdapter<String> subjectAdapter;
     ArrayAdapter<String> levelAdapter;
-
-    private static final ArrayList<String> subjectArray = new ArrayList<>(Arrays.asList("History"
-            , "Biology","Computer Science","Chemistry","Math","Art History","English"));
-
-    private static final ArrayList<String> levelArray = new ArrayList<>(Arrays.asList("Graduate",
-            "Undergrad", "High School", "Technical School"));
-
     FloatingActionButton addButton;
-    Boolean isGoodInput = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +38,8 @@ public class InterestAddActivity extends AppCompatActivity {
     }
 
     private void initialize(){
+        subjectArray = new ArrayList<> (Arrays.asList(getResources().getStringArray(R.array.subject_array)));
+        levelArray = new ArrayList<> (Arrays.asList(getResources().getStringArray(R.array.level_array)));
         editSubject = (AutoCompleteTextView) findViewById(R.id.interest_add_subject);
         editLevel = (AutoCompleteTextView) findViewById(R.id.interest_add_level);
         editClass = (EditText) findViewById(R.id.interest_add_class);
@@ -60,57 +55,15 @@ public class InterestAddActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String searchCase = "";
-                isGoodInput = true;
-                boolean isUnique = false;
+                boolean isUnique;
+                CheckInterest checkInterest = CheckInterest.checkInput(editSubject, editLevel, editClass, subjectArray, levelArray);
 
-                //check to see if subject is valid
-                if (subjectArray.contains(editSubject.getText().toString())) {
-                    searchCase = editSubject.getText().toString();
+                if (checkInterest.getMessage()!=null) {
+                    Toast.makeText(InterestAddActivity.this,checkInterest.getMessage(),Toast.LENGTH_LONG).show();
                 } else {
-                    // might want to use and AlertDialogue here to give option to request new subject
-                    Toast.makeText(InterestAddActivity.this, "Please choose a \"Subject\" from the list " +
-                            "to complete a search", Toast.LENGTH_LONG).show();
-                    editLevel.setText("");
-                    editSubject.setText("");
-                    editClass.setText("");
-                    isGoodInput = false;
-                }
-
-                //check to see if level is valid
-                if (!editClass.getText().toString().equals("") && editLevel.getText().toString().equals("")) {
-                    Toast.makeText(InterestAddActivity.this, "Please specify the \"Level\" of your \"class\"",
-                            Toast.LENGTH_LONG).show();
-                    editLevel.setText("");
-                    editSubject.setText("");
-                    editClass.setText("");
-                    isGoodInput = false;
-
-                } else if (editClass.getText().toString().equals("") && levelArray.contains(editLevel.getText().toString())) {
-                    searchCase = searchCase + "," + editLevel.getText().toString();
-                } else if (editClass.getText().toString().equals("") && editLevel.getText().toString().equals("")) {
-
-                } else {
-                    Toast.makeText(InterestAddActivity.this, "Please choose a \"Level\" from the list to complete the search",
-                            Toast.LENGTH_LONG).show();
-                    editLevel.setText("");
-                    editSubject.setText("");
-                    editClass.setText("");
-                    isGoodInput = false;
-                }
-                //check to see if class exists
-                if (!editClass.getText().toString().equals("")) {
-
-                    searchCase = searchCase + "," + editClass.getText().toString();
-                }
-
-                if (isGoodInput) {
 
                     BuddySQLHelper db = BuddySQLHelper.getInstance(InterestAddActivity.this);
-
-                    isUnique = db.addInterest(searchCase,SearchActivity.loggedIn);
-
-                    Log.d(TAG_ADD, "THE BOOLEAN IS : " + isUnique);
+                    isUnique = db.addInterest(checkInterest,SearchActivity.loggedIn);
 
                     if (!isUnique){
                         Toast.makeText(InterestAddActivity.this,"You already have an interest matching that description.",Toast.LENGTH_LONG).show();
@@ -120,7 +73,6 @@ public class InterestAddActivity extends AppCompatActivity {
                     editSubject.setText("");
                     editClass.setText("");
                     finish();
-
                 }
 
             }

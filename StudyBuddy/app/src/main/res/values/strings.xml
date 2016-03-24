@@ -31,4 +31,22 @@
     <string name="Interest_add_quote_author">- Benjamin Franklin</string>
     <string name="menu_edit">edit_menu</string>
     <string name="menu_search">search_menu</string>
+
+    <string-array name="subject_array">
+        <item>Computer Science</item>
+        <item>History</item>
+        <item>Biology</item>
+        <item>Chemistry</item>
+        <item>Art History</item>
+        <item>Math</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="level_array">
+        <item>Graduate</item>
+        <item>Undergrad</item>
+        <item>High School</item>
+        <item>Technical School</item>
+    </string-array>
+
 </resources>

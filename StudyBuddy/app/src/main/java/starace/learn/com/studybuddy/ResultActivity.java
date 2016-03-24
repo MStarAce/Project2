@@ -21,7 +21,6 @@ public class ResultActivity extends AppCompatActivity {
     TextView searchResultInfo;
     ListView resultList;
     ResultCursorAdapter resultCursorAdapter;
-    String[] searchCriteria;
     BuddySQLHelper db = BuddySQLHelper.getInstance(this);
 
     @Override
@@ -40,17 +39,15 @@ public class ResultActivity extends AppCompatActivity {
 
     }
 
-    // determines what serach to complete based on the getExtra from the search activity
+    // determines what search to complete based on the getExtra from the search activity
     private void search(){
         Intent getSearch = getIntent();
         if (getSearch.getStringExtra(SearchActivity.SEARCH_QUERY) != null) {
             userSearch(getSearch.getStringExtra(SearchActivity.SEARCH_QUERY));
-        } else if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH) != null) {
-            if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.BUDDY_SEARCH)) {
-                buddySearch();
-            } else {
-                criteriaSearch();
-            }
+        } else if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.BUDDY_SEARCH)) {
+            buddySearch();
+        } else if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.CRITERIA_SEARCH)) {
+            criteriaSearch();
         }
     }
 
@@ -89,10 +86,7 @@ public class ResultActivity extends AppCompatActivity {
             userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.FRIEND_COLUMN_BUDDY)));
             cursor.moveToNext();
         }
-
-        // set buddy image for logged in user, this would need to be handled if new user logs in
-        //db.addBuddyImage(userNames);
-
+        
         // get data for each user and add to list
         cursor = db.getUserDataFromList(userNames);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
@@ -106,42 +100,28 @@ public class ResultActivity extends AppCompatActivity {
     private void criteriaSearch() {
         ArrayList<String> userNames = new ArrayList<>();
         Intent getSearchCriteria = getIntent();
-        searchCriteria = getSearchCriteria.getStringExtra(SearchActivity.TYPE_SEARCH).split(",");
-        Log.d(TAG_RESULT, "THIS IS THE LENGTH OF THE CRITERIA ARRAY: " + searchCriteria.length + " AT 0: " + searchCriteria[0]);
+        CheckInterest searchCriteria = getSearchCriteria.getParcelableExtra(SearchActivity.INTEREST_CHECK);
 
-       if (searchCriteria.length == 1 ) {
+        Log.d(TAG_RESULT, "this is the number of inputs from the Parcelabel: " + searchCriteria.getSize());
+        Log.d(TAG_RESULT, "this is the subject from the Parcelabel: " + searchCriteria.getSubject());
+        Cursor cursor = db.searchInterest(searchCriteria, SearchActivity.loggedIn);
 
-           Cursor cursor = db.searchInterest(searchCriteria[0], SearchActivity.loggedIn);
-           searchResultInfo.setText(searchCriteria[0]);
+        if (searchCriteria.getMyClass()!= null) {
+            searchResultInfo.setText(searchCriteria.getSubject() + ", " + searchCriteria.getLevel() + ", " +
+            searchCriteria.getMyClass());
+        } else if (searchCriteria.getLevel() != null) {
+            searchResultInfo.setText(searchCriteria.getSubject() + ", " + searchCriteria.getLevel());
+        } else {
+            searchResultInfo.setText(searchCriteria.getSubject());
+        }
 
-           while (!cursor.isAfterLast()){
-               userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_USER_NAME)));
-               cursor.moveToNext();
-           }
-           cursor.close();
+        while (!cursor.isAfterLast()){
+            userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_USER_NAME)));
+            cursor.moveToNext();
+        }
+        cursor.close();
 
-       } else if (searchCriteria.length == 2) {
-
-           Cursor cursor = db.searchInterest(searchCriteria[0], searchCriteria[1], SearchActivity.loggedIn);
-           searchResultInfo.setText(searchCriteria[0] + ", " + searchCriteria[1]);
-           while (!cursor.isAfterLast()){
-               userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_USER_NAME)));
-               cursor.moveToNext();
-           }
-           cursor.close();
-           Log.d(TAG_RESULT, "USERNAME ARRAYLIST SIZE: " + userNames.size());
-       } else if (searchCriteria.length == 3) {
-
-           Cursor cursor = db.searchInterest(searchCriteria[0], searchCriteria[1], searchCriteria[2], SearchActivity.loggedIn);
-           searchResultInfo.setText(searchCriteria[0] + ", " + searchCriteria[1] + ", " + searchCriteria[2]);
-           while (!cursor.isAfterLast()){
-               userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_USER_NAME)));
-               cursor.moveToNext();
-           }
-           cursor.close();
-       }
-
-        Cursor cursor = db.getUserDataFromList(userNames);
+        cursor = db.getUserDataFromList(userNames);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
         resultList.setAdapter(resultCursorAdapter);
 

@@ -221,16 +221,16 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
 
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'ZiggyP','Astronomy', 'Graduate', 'black holes');");
 
-        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'Jane88','Biology', 'High school', 'biology 102');");
-        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'Jane88','History', 'High school', 'american history');");
+        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'Jane88','Biology', 'High School', 'biology 102');");
+        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'Jane88','History', 'High School', 'american history');");
 
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'JavaLady','Computer Science', null, null);");
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'JavaLady','Chemistry', 'Undergrad', 'organic chemistry 302');");
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'JavaLady','History', 'Undergrad', 'world war II');");
 
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'CatzFan','Computer Science', null, null);");
-        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'CatzFan','Math', 'High school', 'trigonometry');");
-        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'CatzFan','History', 'High school', 'world history');");
+        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'CatzFan','Math', 'High School', 'trigonometry');");
+        db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'CatzFan','History', 'High School', 'world history');");
 
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'MeNeedStudy','Computer Science', null, null);");
         db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'MeNeedStudy','Math', 'Undergrad', 'differential equations');");
@@ -306,21 +306,33 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * checks the "interest" table for data from a single user based on matching subject, level,
-     * and class. returns a boolean that is true if unique and false if not.
-     * @param user
-     * @param subject
-     * @param level
-     * @param myClass
-     * @return
-     */
-    public Boolean checkInterests(String user,String subject,String level,String myClass) {
+
+    public Boolean checkInterests(String user,CheckInterest interests) {
         SQLiteDatabase db = this.getReadableDatabase();
+        String[] arguments = new String[interests.getSize() + 1];
+        String columns = new String();
+
+        if(interests.getSize() == 1) {
+            arguments[0] = user;
+            arguments[1] = interests.getSubject();
+            columns = INTEREST_COLUMN_USER_NAME+ " = ? AND " +INTEREST_COLUMN_SUBJECT + " = ? ";
+        } else if(interests.getSize() == 2) {
+            arguments[0] = user;
+            arguments[1] = interests.getSubject();
+            arguments[2] = interests.getLevel();
+            columns = INTEREST_COLUMN_USER_NAME +" = ? AND " +INTEREST_COLUMN_SUBJECT+ " = ? AND " + INTEREST_COLUMN_LEVEL + " = ?";
+        } else if(interests.getSize() == 3) {
+            arguments[0] = user;
+            arguments[1] = interests.getSubject();
+            arguments[2] = interests.getLevel();
+            arguments[3] = interests.getMyClass();
+            columns = INTEREST_COLUMN_USER_NAME +" = ? AND " + INTEREST_COLUMN_SUBJECT+ " = ? AND " + INTEREST_COLUMN_LEVEL +
+                    " = ? AND " + INTEREST_COLUMN_CLASS + " = ?";
+        }
+
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
-                INTEREST_COLUMN_USER_NAME + " = ? AND " + INTEREST_COLUMN_SUBJECT + " = ? AND " +
-                        INTEREST_COLUMN_LEVEL+ " = ? AND "+ INTEREST_COLUMN_CLASS + " = ?",
-                new String[]{user,subject,level,myClass},
+                columns,
+                arguments,
                 null,
                 null,
                 null);
@@ -364,93 +376,68 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
 
     }
 
-    /**
-     * Adds a new interest to the "interest" table for the logged in user
-     * @param interest
-     * @param loggedIn
-     * @return
-     */
-    public boolean addInterest(String interest, String loggedIn) {
+
+    public boolean addInterest(CheckInterest interest, String loggedIn) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String[] arrayInterests = interest.split(",");
         boolean isUnique;
 
-        if (arrayInterests.length == 1) {
-            isUnique = checkInterests(loggedIn,arrayInterests[0]);
+        isUnique = checkInterests(loggedIn,interest);
+
+        if (interest.getSize() == 1) {
             if (isUnique) {
-                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" + arrayInterests[0] + "', null, null);");
+                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" +
+                        interest.getSubject() + "', null, null);");
             }
-        } else if (arrayInterests.length == 2) {
-            isUnique = checkInterests(loggedIn,arrayInterests[0],arrayInterests[1]);
+        } else if (interest.getSize() == 2) {
             if (isUnique) {
-                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" + arrayInterests[0] + "','" + arrayInterests[1] + "', null);");
+                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" +
+                        interest.getSubject() + "','" + interest.getLevel() + "', null);");
             }
         } else {
-            isUnique = checkInterests(loggedIn,arrayInterests[0],arrayInterests[1],arrayInterests[2]);
             if (isUnique) {
-                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','" + arrayInterests[0] + "','" + arrayInterests[1] + "','" + arrayInterests[2] + "');");
+                db.execSQL("INSERT INTO " + INTEREST_TABLE_NAME + " VALUES (null,'" + loggedIn + "','"
+                        + interest.getSubject() + "','" + interest.getLevel() + "','" + interest.getMyClass() + "');");
             }
         }
 
        return isUnique;
-
     }
 
     /**
-     * returns data for all users except the logged in user from the "interest table"
-     * requires subject, level, and class.
-     * @param subject
-     * @param level
-     * @param myClass
+     *
+     * @param interests
      * @param loggedIn
      * @return
      */
-    public Cursor searchInterest(String subject, String level, String myClass, String loggedIn) {
+    public Cursor searchInterest(CheckInterest interests, String loggedIn) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
-                INTEREST_COLUMN_SUBJECT+ " = ? OR " + INTEREST_COLUMN_LEVEL + " = ? OR " +
-                        INTEREST_COLUMN_CLASS + " = ? AND NOT " +INTEREST_COLUMN_USER_NAME +" = ? ",
-                new String[]{subject,level,myClass,loggedIn},
-                null,
-                null,
-                null);
-        cursor.moveToFirst();
-        return cursor;
-    }
+        Log.d(TAG_HELPER, "This is the number of arguments: " + interests.getSize());
+        Log.d(TAG_HELPER, "This is the loggedIn value: " + loggedIn);
+        Log.d(TAG_HELPER, "This is the class value: " + interests.getMyClass());
+        String[] arguments = new String[interests.getSize() + 1];
+        String columns = new String();
 
-    /**
-     * returns data for all users except the logged in user from the "interest table"
-     * requires subject, level.
-     * @param subject
-     * @param level
-     * @param loggedIn
-     * @return
-     */
-    public Cursor searchInterest(String subject, String level, String loggedIn) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
-                INTEREST_COLUMN_SUBJECT+ " = ? AND " + INTEREST_COLUMN_LEVEL + " = ? AND NOT "
-                        +INTEREST_COLUMN_USER_NAME +" = ? ",
-                new String[]{subject,level,loggedIn},
-                null,
-                null,
-                null);
-        cursor.moveToFirst();
-        return cursor;
-    }
+        if(interests.getSize() == 1) {
+            arguments[0] = loggedIn;
+            arguments[1] = interests.getSubject();
+            columns = INTEREST_COLUMN_USER_NAME+ " <> ? AND " +INTEREST_COLUMN_SUBJECT + " = ? ";
+        } else if(interests.getSize() == 2) {
+            arguments[0] = loggedIn;
+            arguments[1] = interests.getSubject();
+            arguments[2] = interests.getLevel();
+            columns = INTEREST_COLUMN_USER_NAME +" <> ? AND " +INTEREST_COLUMN_SUBJECT+ " = ? AND " + INTEREST_COLUMN_LEVEL + " = ?";
+        } else if(interests.getSize() == 3) {
+            arguments[0] = loggedIn;
+            arguments[1] = interests.getSubject();
+            arguments[2] = interests.getLevel();
+            arguments[3] = interests.getMyClass();
+            columns = INTEREST_COLUMN_USER_NAME +" <> ? AND " + INTEREST_COLUMN_SUBJECT+ " = ? AND " + INTEREST_COLUMN_LEVEL +
+                    " = ? AND " + INTEREST_COLUMN_CLASS + " = ?";
+        }
 
-    /**
-     * returns data for all users except the logged in user from the "interest table"
-     * requires subject,
-     * @param subject
-     * @param loggedIn
-     * @return
-     */
-    public Cursor searchInterest(String subject, String loggedIn) {
-        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
-                INTEREST_COLUMN_SUBJECT+ " = ? AND NOT " + INTEREST_COLUMN_USER_NAME+ " = ? ",
-                new String[]{subject,loggedIn},
+                columns,
+                arguments,
                 null,
                 null,
                 null);

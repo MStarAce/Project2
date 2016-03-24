@@ -6,7 +6,6 @@
     tools:context="starace.learn.com.studybuddy.SearchActivity"
     android:orientation="vertical"
     android:fillViewport="true"
-
     >
 
     <LinearLayout
@@ -22,7 +21,7 @@
             android:textSize="30sp"
             android:textAlignment="center"
             android:textColor="@android:color/holo_orange_dark"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:textAllCaps="true"
             />
 
@@ -85,20 +84,22 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/search_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="40dp"
                 android:layout_marginRight="20dp"
+                android:src="@drawable/beta"
                 />
 
             <Button
                 android:id="@+id/buddy_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:layout_marginTop="40dp"
                 android:background="@drawable/buddy"
                 android:layout_marginLeft="20dp"
+
                 />
 
 
@@ -120,7 +121,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
             android:text="@string/search_quote_author"
             android:textSize="12sp"
             android:textColor="@color/greenDark"
