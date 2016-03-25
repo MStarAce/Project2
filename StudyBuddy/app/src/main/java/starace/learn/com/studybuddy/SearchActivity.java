@@ -23,6 +23,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * SearchActivity records and passes user inputs for three types of searches
+ * (Buddy Search, Username search, Criteria search)
+ */
 public class SearchActivity extends AppCompatActivity {
     private static final String MY_PREF_FILE = "myPrefFile";
     private static final String TAG_SEARCH = "SearchActivity";
@@ -59,6 +63,10 @@ public class SearchActivity extends AppCompatActivity {
         handleIntent(getIntent());
     }
 
+    /**
+     * check to see if database table have already been created
+     * creates them if they haven't been
+     */
     public void checkPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences(MY_PREF_FILE, MODE_PRIVATE);
         hasRun = sharedPreferences.getBoolean(HAS_RUN, false);
@@ -67,6 +75,9 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * initializes the views for the SearchActivity
+     */
     public void initializeViews() {
         levelArray = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.level_array)));
         subjectArray = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.subject_array)));
@@ -78,6 +89,9 @@ public class SearchActivity extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
+    /**
+     * initializes the adapters, result intent, and sets the adapters for the autofilltextviews
+     */
     public void initializeAdapters() {
         intentSearchResult = new Intent(SearchActivity.this, ResultActivity.class);
         subjectAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, subjectArray);
@@ -86,7 +100,10 @@ public class SearchActivity extends AppCompatActivity {
         editLevel.setAdapter(levelAdapter);
     }
 
-    // sets the search button and passes the edittext values to the result activity
+    /**
+     * sets the onclick listener for the FAB button to start the criteria search
+     * in the ResultActivity
+     */
     private void setSearchButton() {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +113,6 @@ public class SearchActivity extends AppCompatActivity {
                 if (checkInterest.getMessage() != null) {
                     Toast.makeText(SearchActivity.this, checkInterest.getMessage(), Toast.LENGTH_LONG).show();
                 } else {
-
                     intentSearchResult.putExtra(TYPE_SEARCH, CRITERIA_SEARCH);
                     intentSearchResult.putExtra(INTEREST_CHECK, checkInterest);
                     editLevel.setText("");
@@ -106,9 +122,12 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
+    /**
+     * sets the onclickListener for the buddy search button
+     * passes the search type to the ResultActivity
+     */
     private void setBuddyButton() {
         buddyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,38 +136,48 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(intentSearchResult);
             }
         });
-
     }
 
+    /**
+     * fills the database tables calling methods from the SQLiteOpenHelper
+     */
     private void setDatabase() {
         BuddySQLHelper createDB = BuddySQLHelper.getInstance(this);
         createDB.fillBuddyTable();
         createDB.fillInterestTable();
         createDB.fillFriendTable();
-
     }
 
+    /**
+     * onDestroy overridden to save sharedpreferences, a boolean to indicate
+     * if tables have been already filled
+     */
     @Override
     protected void onDestroy() {
-
         SharedPreferences.Editor sharedPref = getSharedPreferences(MY_PREF_FILE, MODE_PRIVATE).edit().putBoolean(HAS_RUN, true);
         sharedPref.commit();
         super.onDestroy();
     }
 
+    /**
+     * Option Menu contains two buttons,
+     * a search button and an edit button,
+     * search button captures a user input to send to the ResultActivity
+     * edit button starts the EditInterest activity
+     * @param menu
+     * @return
+     */
+    //<editor-fold desc="Option Menu">
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
-        // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("User Name Search (case sensitive");
-
         return true;
-
     }
 
     @Override
@@ -157,7 +186,6 @@ public class SearchActivity extends AppCompatActivity {
             Intent toEditInterest = new Intent(SearchActivity.this, EditInterests.class);
             startActivity(toEditInterest);
         }
-
         return true;
     }
 
@@ -166,7 +194,6 @@ public class SearchActivity extends AppCompatActivity {
         handleIntent(intent);
     }
 
-    // handles the search intent
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -176,4 +203,5 @@ public class SearchActivity extends AppCompatActivity {
             startActivity(toEditInterest);
         }
     }
+    //</editor-fold>
 }

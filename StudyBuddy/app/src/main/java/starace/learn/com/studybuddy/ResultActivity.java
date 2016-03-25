@@ -13,7 +13,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by mstarace on 3/10/16.
+ * Performs the searches (userName, Buddy, Criteria) with user input from the SearchActivity
+ * displays the results and makes them clickable to go to the DetailActivity
  */
 public class ResultActivity extends AppCompatActivity {
     private final static String TAG_RESULT = "ResultActivity";
@@ -33,13 +34,18 @@ public class ResultActivity extends AppCompatActivity {
         setBuddyImages();
     }
 
+    /**
+     * initializes the views in the ResultActivity
+     */
     public void initialize() {
         searchResultInfo = (TextView) findViewById(R.id.result_search_info);
         resultList = (ListView) findViewById(R.id.result_list_view);
-
     }
 
-    // determines what search to complete based on the getExtra from the search activity
+    /**
+     * receives intent from the SearchActivity and determines what search method
+     * to execute
+     */
     private void search(){
         Intent getSearch = getIntent();
         if (getSearch.getStringExtra(SearchActivity.SEARCH_QUERY) != null) {
@@ -51,82 +57,89 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
-    // based on who is currently logged in this sets the images in the database to identify friends
+    /**
+     * populates the isBuddy column of the buddy table with images if
+     * users are Friends of the loggedIn user
+     */
     private void setBuddyImages(){
         Cursor cursor = db.getFriends(SearchActivity.loggedIn);
-        // check who is on the friend list
-        ArrayList<String> userNames = new ArrayList<>();
-        while (!cursor.isAfterLast()){
-            userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.FRIEND_COLUMN_BUDDY)));
-            cursor.moveToNext();
-        }
-        // set buddy image for logged in user, this would need to be handled if new user logs in
+        ArrayList<String> userNames;
+        userNames = cursorToArrayList(cursor,BuddySQLHelper.FRIEND_COLUMN_BUDDY);
         db.addBuddyImage(userNames);
     }
 
-    // single user search from the menu search option of the search activity
+    /**
+     * performs a search for an individual user
+     * @param user
+     */
     private void userSearch(String user){
-
         Cursor cursor = db.getUserDataFromList(user);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
         resultList.setAdapter(resultCursorAdapter);
-
-        // add search type to the sub title text field
-        searchResultInfo.setText("User Search Result");
+        searchResultInfo.setText(getResources().getString(R.string.user_search_result));
     }
 
-    // performs a search for all friends of the user
+    /**
+     * gets all the userNames of friends of the loggedIn user
+     */
     private void buddySearch(){
-
         Cursor cursor = db.getFriends(SearchActivity.loggedIn);
-
-        // check who is on the friend list
-        ArrayList<String> userNames = new ArrayList<>();
-        while (!cursor.isAfterLast()){
-            userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.FRIEND_COLUMN_BUDDY)));
-            cursor.moveToNext();
-        }
-        
-        // get data for each user and add to list
+        ArrayList<String> userNames;
+        userNames = cursorToArrayList(cursor,BuddySQLHelper.FRIEND_COLUMN_USERNAME);
         cursor = db.getUserDataFromList(userNames);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
         resultList.setAdapter(resultCursorAdapter);
-
-        // add search type to the sub title text field
-        searchResultInfo.setText("Your Buddy List");
+        searchResultInfo.setText(getResources().getString(R.string.buddy_list_search));
     }
 
-    // performs a database search based on the criteria entered by the user on the search activity
+    /**
+     * performs a search of interests using the inputs entered in the SearchActivity
+     */
     private void criteriaSearch() {
-        ArrayList<String> userNames = new ArrayList<>();
+        ArrayList<String> userNames;
         Intent getSearchCriteria = getIntent();
         CheckInterest searchCriteria = getSearchCriteria.getParcelableExtra(SearchActivity.INTEREST_CHECK);
 
-        Log.d(TAG_RESULT, "this is the number of inputs from the Parcelabel: " + searchCriteria.getSize());
+        Log.d(TAG_RESULT, "this is the number of inputs from the Parcelabel: " + searchCriteria.getInterestArrayList().size());
         Log.d(TAG_RESULT, "this is the subject from the Parcelabel: " + searchCriteria.getSubject());
+
         Cursor cursor = db.searchInterest(searchCriteria, SearchActivity.loggedIn);
+        String infoString = searchCriteria.getSubject();
+        ArrayList<String> interestArray = searchCriteria.getInterestArrayList();
 
-        if (searchCriteria.getMyClass()!= null) {
-            searchResultInfo.setText(searchCriteria.getSubject() + ", " + searchCriteria.getLevel() + ", " +
-            searchCriteria.getMyClass());
-        } else if (searchCriteria.getLevel() != null) {
-            searchResultInfo.setText(searchCriteria.getSubject() + ", " + searchCriteria.getLevel());
-        } else {
-            searchResultInfo.setText(searchCriteria.getSubject());
+        for (int i = 1; i < interestArray.size(); i++) {
+            infoString = infoString + ", " + interestArray.get(i);
         }
 
-        while (!cursor.isAfterLast()){
-            userNames.add(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_USER_NAME)));
-            cursor.moveToNext();
-        }
+        searchResultInfo.setText(infoString);
+        userNames = cursorToArrayList(cursor,BuddySQLHelper.INTEREST_COLUMN_USER_NAME);
         cursor.close();
-
         cursor = db.getUserDataFromList(userNames);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
         resultList.setAdapter(resultCursorAdapter);
-
     }
 
+    /**
+     * Takes a cusor and database table column and returns an ArrayList of
+     * the values
+     *
+     * @param cursor
+     * @param columnName
+     * @return
+     */
+    private ArrayList<String> cursorToArrayList (Cursor cursor, String columnName){
+        ArrayList<String> fromCursor = new ArrayList<>();
+
+        while (!cursor.isAfterLast()){
+            fromCursor.add(cursor.getString(cursor.getColumnIndex(columnName)));
+            cursor.moveToNext();
+        }
+        return fromCursor;
+    }
+
+    /**
+     * set the onItemClickListener for the listView using a cursor adaptor
+     */
     private void setOnItemClickListener(){
         resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -142,6 +155,9 @@ public class ResultActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * the search method is called from onResume to enable activity refreshing on back navigation
+     */
     @Override
     protected void onResume() {
         search();

@@ -9,7 +9,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 /**
- * Created by mstarace on 3/18/16.
+ * Custom Cursor Adaptor for the DetailActivity
  */
 public class DetailCursorAdapter extends CursorAdapter {
     private static final String TAG_DETAIL_ADAPTER = "DetailCursorAdapter";

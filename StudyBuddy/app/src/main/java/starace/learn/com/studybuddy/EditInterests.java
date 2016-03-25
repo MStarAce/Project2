@@ -11,7 +11,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 /**
- * Created by mstarace on 3/13/16.
+ * EditInterest Activity displays the loggedIn user's interest and allows them,
+ * to be deleted and for new interests to be added
  */
 
 public class EditInterests extends AppCompatActivity {
@@ -36,44 +37,39 @@ public class EditInterests extends AppCompatActivity {
         add = (FloatingActionButton) findViewById(R.id.interest_add_button);
         interestTitle = (TextView) findViewById(R.id.interest_title_username);
         interestListView = (ListView) findViewById(R.id.interest_list_view);
-
     }
 
     private void setInterestView(){
         Cursor cursor = db.getInterests(SearchActivity.loggedIn);
-
         interestCursorAdapter = new DetailCursorAdapter(EditInterests.this, cursor, 0);
         interestListView.setAdapter(interestCursorAdapter);
-
     }
 
-    // delete interest item on long click
+    /**
+     * long click is used to delete the item at that index
+     */
     private void setOnItemLongClick() {
-
         interestListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String subject;
-                String level;
-                String myClass;
-
                 Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+                CheckInterest deleteInterest = new CheckInterest();
 
-                subject = cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_SUBJECT));
-                level = cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_LEVEL));
-                myClass = cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_CLASS));
+                deleteInterest.setSubject(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_SUBJECT)));
+                deleteInterest.setLevel(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_LEVEL)));
+                deleteInterest.setMyClass(cursor.getString(cursor.getColumnIndex(BuddySQLHelper.INTEREST_COLUMN_CLASS)));
 
-                db.deleteInterest(subject, level, myClass, SearchActivity.loggedIn);
-
+                db.deleteInterest(deleteInterest, SearchActivity.loggedIn);
                 setInterestView();
-
                 return false;
             }
         });
     }
 
+    /**
+     * starts the InterestAddActivity
+     */
     private void setAddButton(){
-
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +80,10 @@ public class EditInterests extends AppCompatActivity {
 
     }
 
+    /**
+     * set interest is called from on resume to re-populate the activity
+     * on back button press
+     */
     @Override
     protected void onResume() {
         setInterestView();

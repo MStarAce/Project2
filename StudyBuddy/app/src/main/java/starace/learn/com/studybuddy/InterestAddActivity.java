@@ -13,6 +13,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * InterestAddActivity allows user to add a new interest.
+ * checks for unique input and adds unique, valid entries
+ */
 public class InterestAddActivity extends AppCompatActivity {
     private static final String TAG_ADD = "add_interest_activity";
     public ArrayList<String> subjectArray;
@@ -29,12 +33,9 @@ public class InterestAddActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_interest);
-
         initialize();
         setAddButton();
-
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
     }
 
     private void initialize(){

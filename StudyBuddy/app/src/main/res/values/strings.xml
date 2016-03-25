@@ -31,6 +31,8 @@
     <string name="Interest_add_quote_author">- Benjamin Franklin</string>
     <string name="menu_edit">edit_menu</string>
     <string name="menu_search">search_menu</string>
+    <string name="user_search_result">User Search Result</string>
+    <string name="buddy_list_search">Your Buddy List</string>
 
     <string-array name="subject_array">
         <item>Computer Science</item>
