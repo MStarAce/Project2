@@ -310,19 +310,24 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         Log.d(TAG_HELPER, "This is the loggedIn value: " + user);
         Log.d(TAG_HELPER, "This is the class value: " + interests.getMyClass());
 
-        String[] arguments = new String[interestList.size() + 1];
+        String[] arguments = new String[4];
         arguments[0] = user;
-        String columns = INTEREST_COLUMN_USER_NAME+ " = ? AND ";
+        String columns = INTEREST_COLUMN_USER_NAME+ " = ? AND " + INTEREST_COLUMN_SUBJECT + " = ? AND " +
+                INTEREST_COLUMN_LEVEL + " = ? AND " + INTEREST_COLUMN_CLASS + " = ?";
 
-        for (int i = 1; i < arguments.length; i++) {
-
-            arguments[i] = interestList.get(i -1);
-            if (i < interestList.size()) {
-                columns = columns + INTEREST_COLUMN_ALL[i + 1] + " = ? AND ";
-            } else {
-                columns = columns + INTEREST_COLUMN_ALL[i + 1] + " = ?";
-            }
-        }
+       if (interestList.size() == 1) {
+           arguments[1] = interestList.get(0);
+           arguments[2] = "null";
+           arguments[3] = "null";
+       } else if (interestList.size() == 2) {
+           arguments[1] = interestList.get(0);
+           arguments[2] = interestList.get(1);
+           arguments[3] = "null";
+       } else if (interestList.size() == 3) {
+           arguments[1] = interestList.get(0);
+           arguments[2] = interestList.get(1);
+           arguments[3] = interestList.get(2);
+       }
 
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
                 columns,
