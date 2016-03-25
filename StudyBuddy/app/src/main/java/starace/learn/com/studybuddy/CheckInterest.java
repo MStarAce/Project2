@@ -44,9 +44,8 @@ public class CheckInterest implements Parcelable {
      * @param level
      */
     public void setLevel(String level) {
-
         if (interestArrayList != null) {
-            if (interestArrayList.size() == 1) {
+            if (interestArrayList.size() == 1 && level != null) {
                 interestArrayList.add(level);
             } else if (interestArrayList.size() > 1){
                 interestArrayList.set(1, level);
@@ -80,7 +79,7 @@ public class CheckInterest implements Parcelable {
      */
     public void setMyClass(String myClass) {
         if (interestArrayList != null) {
-            if (interestArrayList.size() == 2) {
+            if (interestArrayList.size() == 2 & myClass != null) {
                 interestArrayList.add(myClass);
             } else if (interestArrayList.size() > 2){
                 interestArrayList.set(2, myClass);

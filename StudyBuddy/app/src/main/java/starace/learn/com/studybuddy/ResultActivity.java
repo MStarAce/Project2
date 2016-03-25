@@ -49,7 +49,7 @@ public class ResultActivity extends AppCompatActivity {
     private void search(){
         Intent getSearch = getIntent();
         if (getSearch.getStringExtra(SearchActivity.SEARCH_QUERY) != null) {
-            userSearch(getSearch.getStringExtra(SearchActivity.SEARCH_QUERY));
+            userSearch(getSearch.getStringExtra(SearchActivity.SEARCH_QUERY),SearchActivity.loggedIn);
         } else if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.BUDDY_SEARCH)) {
             buddySearch();
         } else if (getSearch.getStringExtra(SearchActivity.TYPE_SEARCH).equals(SearchActivity.CRITERIA_SEARCH)) {
@@ -72,8 +72,8 @@ public class ResultActivity extends AppCompatActivity {
      * performs a search for an individual user
      * @param user
      */
-    private void userSearch(String user){
-        Cursor cursor = db.getUserDataFromList(user);
+    private void userSearch(String user,String loggedIn){
+        Cursor cursor = db.getUserDataFromList(user,loggedIn);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
         resultList.setAdapter(resultCursorAdapter);
         searchResultInfo.setText(getResources().getString(R.string.user_search_result));
@@ -85,7 +85,7 @@ public class ResultActivity extends AppCompatActivity {
     private void buddySearch(){
         Cursor cursor = db.getFriends(SearchActivity.loggedIn);
         ArrayList<String> userNames;
-        userNames = cursorToArrayList(cursor,BuddySQLHelper.FRIEND_COLUMN_USERNAME);
+        userNames = cursorToArrayList(cursor,BuddySQLHelper.FRIEND_COLUMN_BUDDY);
         cursor = db.getUserDataFromList(userNames);
         resultCursorAdapter = new ResultCursorAdapter(ResultActivity.this,cursor,0);
         resultList.setAdapter(resultCursorAdapter);

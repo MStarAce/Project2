@@ -200,12 +200,12 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
      * @param userName
      * @return
      */
-    public Cursor getUserDataFromList(String userName){
+    public Cursor getUserDataFromList(String userName, String loggedIn){
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(BUDDY_TABLE_NAME, BUDDY_COLUMN_ALL,
-                BUDDY_COLUMN_USERNAME+ " = ? ",
-                new String[]{userName},
+                BUDDY_COLUMN_USERNAME+ " = ? AND NOT " + BUDDY_COLUMN_USERNAME + " = ?",
+                new String[]{userName,loggedIn},
                 null,
                 null,
                 null);
@@ -346,16 +346,15 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<String> interestArray = deleteInterest.getInterestArrayList();
         String deleteString = "DELETE FROM " + INTEREST_TABLE_NAME + " WHERE " + INTEREST_COLUMN_USER_NAME +
-                 "= '" + loggedIn+ "' AND " + INTEREST_COLUMN_SUBJECT + " = '" + deleteInterest.getSubject();
+                 "= '" + loggedIn+ "' AND " + INTEREST_COLUMN_SUBJECT + " = '" + deleteInterest.getSubject() + "'";
 
+        Log.d(TAG_HELPER ,"THIS IS THE SIZE OF THE ARRAY: " +interestArray.size());
         for (int i = 1; i < interestArray.size(); i++) {
-            if (i < interestArray.size() - 1) {
-                deleteString = deleteString + "' AND " + INTEREST_COLUMN_ALL[i + 2] + " = '" + interestArray.get(i);
-            } else {
-                deleteString = deleteString + "' AND " + INTEREST_COLUMN_ALL[i + 2] + " = '" + interestArray.get(i) + "';";
-            }
+                deleteString = deleteString + " AND " + INTEREST_COLUMN_ALL[i + 2] + " = '" + interestArray.get(i) + "'";
         }
+        deleteString = deleteString + ";";
 
+        Log.d(TAG_HELPER, "This is the delete string: " +deleteString);
        db.execSQL(deleteString);
     }
 
@@ -382,7 +381,6 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
                         + interest.getSubject() + "','" + interest.getLevel() + "','" + interest.getMyClass() + "');");
             }
         }
-
        return isUnique;
     }
 
@@ -400,15 +398,12 @@ public class BuddySQLHelper extends SQLiteOpenHelper {
 
         String[] arguments = new String[interestList.size() + 1];
         arguments[0] = loggedIn;
-        String columns = INTEREST_COLUMN_USER_NAME+ " <> ? AND ";
+        String columns = INTEREST_COLUMN_USER_NAME+ " <> ? ";
 
         for (int i = 1; i < (arguments.length); i++) {
             arguments[i] = interestList.get(i -1);
-            if (i < interestList.size()) {
-                columns = columns + INTEREST_COLUMN_ALL[i + 1] + " = ? AND ";
-            } else {
-                columns = columns + INTEREST_COLUMN_ALL[i + 1] + " = ?";
-            }
+            columns = columns + "AND "+ INTEREST_COLUMN_ALL[i + 1] + " = ? ";
+
         }
 
         Cursor cursor = db.query(INTEREST_TABLE_NAME,INTEREST_COLUMN_ALL,
