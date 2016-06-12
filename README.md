@@ -18,7 +18,7 @@ neighborhood app
 1) user can not crash the app with inputs made on the search page
 2) user returns nothing when search is should return no results ie "Art History" is a subject that has no users associated with it.
 3) buddy search returns the correct users
-4) detail view allows user to add or remove friends and the database is updated(after returning to the result activity) buddy search is updated and user no longer appears or in the case of a criteria and userName search the result is updated with appropiate image
+4) detail view allows user to add or remove friends and the database is updated(after returning to the result activity) buddy search is updated and user no longer appears or in the case of a criteria and userName search the result is updated with appropriate image
 5) The edit button on the options menu correctly displays the users interests
 6) The long click feature of the edit activity deletes only pressed item and updates activity to remove it from list view
 7) The add feature handles user input and doens't crash and new interest is added to the database
